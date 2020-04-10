@@ -3,7 +3,7 @@ package gridder
 import "image/color"
 
 const (
-	defaultGridPadding           = 32
+	defaultGridPadding           = 0
 	defaultGridWidth             = 500 * 2
 	defaultGridHeight            = 500
 	defaultGridLineStrokeWidth   = 2
@@ -36,7 +36,7 @@ var (
 type ImageConfig struct {
 	Width   int
 	Height  int
-	Padding float64
+	Padding int
 	Name    string
 }
 
@@ -56,9 +56,19 @@ func (g *ImageConfig) GetHeight() int {
 	return g.Height
 }
 
+// GetCanvasWidth gets canvas width
+func (g *ImageConfig) GetCanvasWidth() int {
+	return g.GetWidth() - g.GetPadding()*2
+}
+
+// GetCanvasHeight gets canvas height
+func (g *ImageConfig) GetCanvasHeight() int {
+	return g.GetHeight() - g.GetPadding()*2
+}
+
 // GetPadding gets image padding
-func (g *ImageConfig) GetPadding() float64 {
-	if g.Padding <= 0 {
+func (g *ImageConfig) GetPadding() int {
+	if g.Padding < 0 {
 		return defaultGridPadding
 	}
 	return g.Padding

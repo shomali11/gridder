@@ -14,9 +14,10 @@ func main() {
 		Name:   "example4.png",
 	}
 	gridConfig := gridder.GridConfig{
-		Rows:            4,
-		Columns:         4,
-		LineStrokeWidth: 2,
+		Rows:              4,
+		Columns:           4,
+		LineStrokeWidth:   2,
+		BorderStrokeWidth: 4,
 	}
 
 	grid, err := gridder.New(imageConfig, gridConfig)

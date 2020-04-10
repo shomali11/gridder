@@ -11,7 +11,7 @@ func main() {
 	imageConfig := gridder.ImageConfig{
 		Width:   500,
 		Height:  500,
-		Padding: 200,
+		Padding: 20,
 		Name:    "example2.png",
 	}
 	gridConfig := gridder.GridConfig{

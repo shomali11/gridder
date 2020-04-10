@@ -14,7 +14,7 @@ func main() {
 		Columns:           8,
 		LineDashes:        0,
 		LineStrokeWidth:   2,
-		BorderStrokeWidth: 8,
+		BorderStrokeWidth: 0,
 		LineColor:         color.Gray{},
 		BorderColor:       color.Gray{},
 		BackgroundColor:   color.White,
