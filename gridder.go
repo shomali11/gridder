@@ -5,6 +5,8 @@ import (
 	"image/color"
 
 	"github.com/fogleman/gg"
+	"github.com/golang/freetype/truetype"
+	"golang.org/x/image/font/gofont/goregular"
 )
 
 var (
@@ -13,13 +15,19 @@ var (
 )
 
 // New creates a new gridder and sets it up with its configuration
-func New(imageConfig ImageConfig, gridConfig GridConfig) *Gridder {
-	gridder := Gridder{imageConfig: imageConfig, gridConfig: gridConfig, ctx: gg.NewContext(imageConfig.GetWidth(), imageConfig.GetHeight())}
-	gridder.setupCanvas()
+func New(imageConfig ImageConfig, gridConfig GridConfig) (*Gridder, error) {
+	gridder := Gridder{
+		imageConfig: imageConfig,
+		gridConfig:  gridConfig,
+		ctx:         gg.NewContext(imageConfig.GetWidth(), imageConfig.GetHeight()),
+	}
 	gridder.paintBackground()
-	gridder.paintGrid()
+	err := gridder.paintGrid()
+	if err != nil {
+		return nil, err
+	}
 	gridder.paintBorder()
-	return &gridder
+	return &gridder, nil
 }
 
 // Gridder gridder structure
@@ -35,7 +43,7 @@ func (g *Gridder) SavePNG() error {
 }
 
 // PaintCell paints Cell
-func (g *Gridder) PaintCell(x int, y int, color color.Color) error {
+func (g *Gridder) PaintCell(row int, column int, color color.Color) error {
 	cellWidth, err := g.getCellWidth()
 	if err != nil {
 		return err
@@ -46,27 +54,27 @@ func (g *Gridder) PaintCell(x int, y int, color color.Color) error {
 		return err
 	}
 
-	w := cellWidth * float64(g.imageConfig.GetWidth())
-	h := cellHeight * float64(g.imageConfig.GetHeight())
-
-	return g.DrawRectangle(x, y, RectangleConfig{Width: w, Height: h, Color: color})
+	paintWidth := cellWidth - g.gridConfig.GetLineStrokeWidth()*2
+	paintHeight := cellHeight - g.gridConfig.GetLineStrokeWidth()*2
+	return g.DrawRectangle(row, column, RectangleConfig{Width: paintWidth, Height: paintHeight, Color: color})
 }
 
 // DrawRectangle draws a rectangle in a cell
-func (g *Gridder) DrawRectangle(x int, y int, rectangleConfigs ...RectangleConfig) error {
-	center, err := g.getCellCenter(x, y)
+func (g *Gridder) DrawRectangle(row int, column int, rectangleConfigs ...RectangleConfig) error {
+	center, err := g.getCellCenter(row, column)
 	if err != nil {
 		return err
 	}
 
 	rectangleConfig := getFirstRectangleConfig(rectangleConfigs...)
-	w := rectangleConfig.GetWidth() / float64(g.imageConfig.GetWidth())
-	h := rectangleConfig.GetHeight() / float64(g.imageConfig.GetHeight())
+	rectangleWidth := rectangleConfig.GetWidth()
+	rectangleHeight := rectangleConfig.GetHeight()
 
-	i := center.X - w/2
-	j := center.Y - h/2
+	x := center.X - rectangleWidth/2
+	y := center.Y - rectangleHeight/2
 
-	g.ctx.DrawRectangle(i, j, w, h)
+	g.ctx.DrawRectangle(x, y, rectangleWidth, rectangleHeight)
+	g.ctx.SetLineWidth(rectangleConfig.GetStrokeWidth())
 	g.ctx.SetColor(rectangleConfig.GetColor())
 
 	if rectangleConfig.IsStroke() {
@@ -78,14 +86,15 @@ func (g *Gridder) DrawRectangle(x int, y int, rectangleConfigs ...RectangleConfi
 }
 
 // DrawCircle draws a circle in a cell
-func (g *Gridder) DrawCircle(x int, y int, circleConfigs ...CircleConfig) error {
-	center, err := g.getCellCenter(x, y)
+func (g *Gridder) DrawCircle(row int, column int, circleConfigs ...CircleConfig) error {
+	center, err := g.getCellCenter(row, column)
 	if err != nil {
 		return err
 	}
 
 	circleConfig := getFirstCircleConfig(circleConfigs...)
 	g.ctx.DrawPoint(center.X, center.Y, circleConfig.GetRadius())
+	g.ctx.SetLineWidth(circleConfig.GetStrokeWidth())
 	g.ctx.SetColor(circleConfig.GetColor())
 
 	if circleConfig.IsStroke() {
@@ -97,13 +106,13 @@ func (g *Gridder) DrawCircle(x int, y int, circleConfigs ...CircleConfig) error 
 }
 
 // DrawLine draws a line between two cells
-func (g *Gridder) DrawLine(x1 int, y1 int, x2 int, y2 int, lineConfigs ...LineConfig) error {
-	center1, err := g.getCellCenter(x1, y1)
+func (g *Gridder) DrawLine(row1 int, column1 int, row2 int, column2 int, lineConfigs ...LineConfig) error {
+	center1, err := g.getCellCenter(row1, column1)
 	if err != nil {
 		return err
 	}
 
-	center2, err := g.getCellCenter(x2, y2)
+	center2, err := g.getCellCenter(row2, column2)
 	if err != nil {
 		return err
 	}
@@ -117,18 +126,29 @@ func (g *Gridder) DrawLine(x1 int, y1 int, x2 int, y2 int, lineConfigs ...LineCo
 	}
 
 	g.ctx.SetColor(lineConfig.GetColor())
-	g.ctx.SetLineWidth(lineConfig.GetWidth())
+	g.ctx.SetLineWidth(lineConfig.GetStrokeWidth())
 	g.ctx.DrawLine(center1.X, center1.Y, center2.X, center2.Y)
 	g.ctx.Stroke()
 	return nil
 }
 
-func (g *Gridder) setupCanvas() {
-	padding := g.imageConfig.GetPadding()
-	width := float64(g.imageConfig.GetWidth())
-	height := float64(g.imageConfig.GetHeight())
-	g.ctx.Translate(padding, padding)
-	g.ctx.Scale(width-padding*2, height-padding*2)
+// DrawString draws a string in a cell
+func (g *Gridder) DrawString(row int, column int, text string, stringConfigs ...StringConfig) error {
+	center, err := g.getCellCenter(row, column)
+	if err != nil {
+		return err
+	}
+
+	font, err := truetype.Parse(goregular.TTF)
+	if err != nil {
+		return err
+	}
+
+	stringConfig := getFirstStringConfig(stringConfigs...)
+	g.ctx.SetFontFace(truetype.NewFace(font, &truetype.Options{Size: stringConfig.GetFontSize()}))
+	g.ctx.SetColor(stringConfig.GetColor())
+	g.ctx.DrawStringAnchored(text, center.X, center.Y, 0.5, 0.35)
+	return nil
 }
 
 func (g *Gridder) paintBackground() {
@@ -136,41 +156,47 @@ func (g *Gridder) paintBackground() {
 	g.ctx.Clear()
 }
 
-func (g *Gridder) paintGrid() {
+func (g *Gridder) paintGrid() error {
+	imageWidth := float64(g.imageConfig.GetWidth())
+	imageHeight := float64(g.imageConfig.GetHeight())
+
+	cellWidth, err := g.getCellWidth()
+	if err != nil {
+		return err
+	}
+
+	cellHeight, err := g.getCellHeight()
+	if err != nil {
+		return err
+	}
+
 	columns := float64(g.gridConfig.GetColumns())
 	for i := 1.0; i <= columns; i++ {
-		x := i / columns
+		x := i * cellWidth
 		g.ctx.MoveTo(x, 0)
-		g.ctx.LineTo(x, 1)
+		g.ctx.LineTo(x, imageHeight)
 	}
 
 	rows := float64(g.gridConfig.GetRows())
 	for i := 1.0; i <= rows; i++ {
-		y := i / rows
+		y := i * cellHeight
 		g.ctx.MoveTo(0, y)
-		g.ctx.LineTo(1, y)
+		g.ctx.LineTo(imageWidth, y)
 	}
 
 	g.ctx.SetColor(g.gridConfig.GetLineColor())
-	g.ctx.SetLineWidth(g.gridConfig.GetLineWidth())
+	g.ctx.SetLineWidth(g.gridConfig.GetLineStrokeWidth())
 	g.ctx.Stroke()
+	return nil
 }
 
 func (g *Gridder) paintBorder() {
-	g.ctx.MoveTo(0, 0)
-	g.ctx.LineTo(1, 0)
+	width := float64(g.imageConfig.GetWidth())
+	height := float64(g.imageConfig.GetHeight())
 
-	g.ctx.MoveTo(0, 0)
-	g.ctx.LineTo(0, 1)
-
-	g.ctx.MoveTo(1, 1)
-	g.ctx.LineTo(1, 0)
-
-	g.ctx.MoveTo(1, 1)
-	g.ctx.LineTo(0, 1)
-
+	g.ctx.DrawRectangle(0, 0, width, height)
+	g.ctx.SetLineWidth(g.gridConfig.GetBorderStrokeWidth())
 	g.ctx.SetColor(g.gridConfig.GetBorderColor())
-	g.ctx.SetLineWidth(g.gridConfig.GetBorderWidth())
 	g.ctx.Stroke()
 }
 
@@ -179,7 +205,7 @@ func (g *Gridder) getCellWidth() (float64, error) {
 	if columns == 0 {
 		return 0, errNoColumns
 	}
-	return 1 / float64(g.gridConfig.GetColumns()), nil
+	return float64(g.imageConfig.GetWidth()) / float64(g.gridConfig.GetColumns()), nil
 }
 
 func (g *Gridder) getCellHeight() (float64, error) {
@@ -187,10 +213,10 @@ func (g *Gridder) getCellHeight() (float64, error) {
 	if rows == 0 {
 		return 0, errNoRows
 	}
-	return 1 / float64(g.gridConfig.GetRows()), nil
+	return float64(g.imageConfig.GetHeight()) / float64(g.gridConfig.GetRows()), nil
 }
 
-func (g *Gridder) getCellCenter(x, y int) (*gg.Point, error) {
+func (g *Gridder) getCellCenter(row, column int) (*gg.Point, error) {
 	columns := float64(g.gridConfig.GetColumns())
 	if columns == 0 {
 		return nil, errNoColumns
@@ -211,7 +237,10 @@ func (g *Gridder) getCellCenter(x, y int) (*gg.Point, error) {
 		return nil, err
 	}
 
-	i := float64(y)/columns + cellWidth/2
-	j := float64(x)/rows + cellHeight/2
-	return &gg.Point{X: i, Y: j}, nil
+	imageWidth := float64(g.imageConfig.GetWidth())
+	imageHeight := float64(g.imageConfig.GetHeight())
+
+	x := float64(column)*(imageWidth/columns) + cellWidth/2
+	y := float64(row)*(imageHeight/rows) + cellHeight/2
+	return &gg.Point{X: x, Y: y}, nil
 }

@@ -3,18 +3,22 @@ package gridder
 import "image/color"
 
 const (
-	defaultGridPadding     = 32
-	defaultGridWidth       = 1024 * 2
-	defaultGridHeight      = 1024
-	defaultGridLineWidth   = 2
-	defaultGridBorderWidth = 4
+	defaultGridPadding           = 32
+	defaultGridWidth             = 1024 * 2
+	defaultGridHeight            = 1024
+	defaultGridLineStrokeWidth   = 2
+	defaultGridBorderStrokeWidth = 4
 
-	defaultLineWidth = 1
+	defaultStringFontSize = 24
 
-	defaultCircleRadius = 10
+	defaultLineStrokeWidth = 1
 
-	defaultRectangleWidth  = 20
-	defaultRectangleHeight = 20
+	defaultCircleRadius      = 10
+	defaultCircleStrokeWidth = 1
+
+	defaultRectangleWidth       = 20
+	defaultRectangleHeight      = 20
+	defaultRectangleStrokeWidth = 1
 )
 
 var (
@@ -22,6 +26,7 @@ var (
 	defaultGridBorderColor     = color.Black
 	defaultGridLineColor       = color.NRGBA{R: 0, G: 0, B: 0, A: 255 / 4}
 
+	defaultStringColor    = color.Gray{}
 	defaultLineColor      = color.Gray{}
 	defaultCircleColor    = color.Gray{}
 	defaultRectangleColor = color.NRGBA{R: 0, G: 0, B: 0, A: 255 / 2}
@@ -66,29 +71,29 @@ func (g *ImageConfig) GetName() string {
 
 // GridConfig Grid Configuration
 type GridConfig struct {
-	Rows            int
-	Columns         int
-	LineWidth       float64
-	BorderWidth     float64
-	LineColor       color.Color
-	BorderColor     color.Color
-	BackgroundColor color.Color
+	Rows              int
+	Columns           int
+	LineStrokeWidth   float64
+	BorderStrokeWidth float64
+	LineColor         color.Color
+	BorderColor       color.Color
+	BackgroundColor   color.Color
 }
 
-// GetLineWidth gets line width
-func (g *GridConfig) GetLineWidth() float64 {
-	if g.LineWidth <= 0 {
-		return defaultGridLineWidth
+// GetLineStrokeWidth gets line stroke width
+func (g *GridConfig) GetLineStrokeWidth() float64 {
+	if g.LineStrokeWidth <= 0 {
+		return defaultGridLineStrokeWidth
 	}
-	return g.LineWidth
+	return g.LineStrokeWidth
 }
 
-// GetBorderWidth gets border width
-func (g *GridConfig) GetBorderWidth() float64 {
-	if g.BorderWidth <= 0 {
-		return defaultGridBorderWidth
+// GetBorderStrokeWidth gets border stroke width
+func (g *GridConfig) GetBorderStrokeWidth() float64 {
+	if g.BorderStrokeWidth <= 0 {
+		return defaultGridBorderStrokeWidth
 	}
-	return g.BorderWidth
+	return g.BorderStrokeWidth
 }
 
 // GetLineColor gets line color
@@ -127,17 +132,17 @@ func (g *GridConfig) GetColumns() int {
 
 // LineConfig Line Configuration
 type LineConfig struct {
-	Width  float64
-	Dashes float64
-	Color  color.Color
+	StrokeWidth float64
+	Dashes      float64
+	Color       color.Color
 }
 
-// GetWidth gets width
-func (g *LineConfig) GetWidth() float64 {
-	if g.Width <= 0 {
-		return defaultLineWidth
+// GetStrokeWidth gets stroke width
+func (g *LineConfig) GetStrokeWidth() float64 {
+	if g.StrokeWidth <= 0 {
+		return defaultLineStrokeWidth
 	}
-	return g.Width
+	return g.StrokeWidth
 }
 
 // GetColor gets color
@@ -155,9 +160,10 @@ func (g *LineConfig) GetDashes() float64 {
 
 // CircleConfig Grid Circle Configuration
 type CircleConfig struct {
-	Radius float64
-	Color  color.Color
-	Stroke bool
+	Radius      float64
+	Color       color.Color
+	Stroke      bool
+	StrokeWidth float64
 }
 
 // GetRadius gets radius
@@ -181,12 +187,21 @@ func (g *CircleConfig) IsStroke() bool {
 	return g.Stroke
 }
 
+// GetStrokeWidth gets stroke width
+func (g *CircleConfig) GetStrokeWidth() float64 {
+	if g.StrokeWidth <= 0 {
+		return defaultCircleStrokeWidth
+	}
+	return g.StrokeWidth
+}
+
 // RectangleConfig Rectangle Configuration
 type RectangleConfig struct {
-	Width  float64
-	Height float64
-	Color  color.Color
-	Stroke bool
+	Width       float64
+	Height      float64
+	Color       color.Color
+	Stroke      bool
+	StrokeWidth float64
 }
 
 // GetWidth gets width
@@ -218,6 +233,36 @@ func (g *RectangleConfig) IsStroke() bool {
 	return g.Stroke
 }
 
+// GetStrokeWidth gets stroke width
+func (g *RectangleConfig) GetStrokeWidth() float64 {
+	if g.StrokeWidth <= 0 {
+		return defaultRectangleStrokeWidth
+	}
+	return g.StrokeWidth
+}
+
+// StringConfig Grid String Configuration
+type StringConfig struct {
+	FontSize float64
+	Color    color.Color
+}
+
+// GetFontSize gets font size
+func (g *StringConfig) GetFontSize() float64 {
+	if g.FontSize <= 0 {
+		return defaultStringFontSize
+	}
+	return g.FontSize
+}
+
+// GetColor gets color
+func (g *StringConfig) GetColor() color.Color {
+	if g.Color == nil {
+		return defaultStringColor
+	}
+	return g.Color
+}
+
 func getFirstRectangleConfig(configs ...RectangleConfig) RectangleConfig {
 	if len(configs) == 0 {
 		return RectangleConfig{}
@@ -235,6 +280,13 @@ func getFirstCircleConfig(configs ...CircleConfig) CircleConfig {
 func getFirstLineConfig(configs ...LineConfig) LineConfig {
 	if len(configs) == 0 {
 		return LineConfig{}
+	}
+	return configs[0]
+}
+
+func getFirstStringConfig(configs ...StringConfig) StringConfig {
+	if len(configs) == 0 {
+		return StringConfig{}
 	}
 	return configs[0]
 }
