@@ -9,8 +9,8 @@ import (
 
 func main() {
 	imageConfig := gridder.ImageConfig{
-		Width:  1024,
-		Height: 1024,
+		Width:  500,
+		Height: 500,
 		Name:   "example6.png",
 	}
 	gridConfig := gridder.GridConfig{

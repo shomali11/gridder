@@ -9,8 +9,8 @@ import (
 
 func main() {
 	imageConfig := gridder.ImageConfig{
-		Width:  1024,
-		Height: 1024,
+		Width:  500,
+		Height: 500,
 		Name:   "example4.png",
 	}
 	gridConfig := gridder.GridConfig{
@@ -24,8 +24,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	grid.DrawRectangle(0, 0, gridder.RectangleConfig{Width: 120, Height: 120, Color: color.Black, Stroke: true})
-	grid.DrawRectangle(0, 3, gridder.RectangleConfig{Width: 120, Height: 120, Color: color.Black, Stroke: true, StrokeWidth: 50})
-	grid.DrawRectangle(3, 3, gridder.RectangleConfig{Width: 120, Height: 120, Color: color.Black, Stroke: false})
+	grid.DrawRectangle(0, 0, gridder.RectangleConfig{Width: 60, Height: 60, Color: color.Black, Stroke: true})
+	grid.DrawRectangle(0, 3, gridder.RectangleConfig{Width: 60, Height: 60, Color: color.Black, Stroke: true, StrokeWidth: 25})
+	grid.DrawRectangle(3, 3, gridder.RectangleConfig{Width: 60, Height: 60, Color: color.Black, Stroke: false})
 	grid.SavePNG()
 }

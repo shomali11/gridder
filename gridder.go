@@ -33,8 +33,6 @@ func New(imageConfig ImageConfig, gridConfig GridConfig) (*Gridder, error) {
 		ctx:         gg.NewContext(imageConfig.GetWidth(), imageConfig.GetHeight()),
 	}
 	gridder.paintBackground()
-	gridder.paintGrid()
-	gridder.paintBorder()
 	return &gridder, nil
 }
 
@@ -47,6 +45,8 @@ type Gridder struct {
 
 // SavePNG saves to PNG
 func (g *Gridder) SavePNG() error {
+	g.paintGrid()
+	g.paintBorder()
 	return g.ctx.SavePNG(g.imageConfig.GetName())
 }
 
@@ -220,11 +220,30 @@ func (g *Gridder) paintGrid() {
 }
 
 func (g *Gridder) paintBorder() {
-	width := float64(g.imageConfig.GetWidth())
-	height := float64(g.imageConfig.GetHeight())
+	imageWidth := float64(g.imageConfig.GetWidth())
+	imageHeight := float64(g.imageConfig.GetHeight())
 
-	g.ctx.SetDash()
-	g.ctx.DrawRectangle(0, 0, width, height)
+	cellWidth := g.getCellWidth()
+	cellHeight := g.getCellHeight()
+
+	columns := float64(g.gridConfig.GetColumns())
+	g.ctx.MoveTo(0, 0)
+	g.ctx.LineTo(0, imageHeight)
+	g.ctx.MoveTo(cellWidth*columns, 0)
+	g.ctx.LineTo(cellWidth*columns, imageHeight)
+
+	rows := float64(g.gridConfig.GetRows())
+	g.ctx.MoveTo(0, 0)
+	g.ctx.LineTo(imageWidth, 0)
+	g.ctx.MoveTo(0, cellHeight*rows)
+	g.ctx.LineTo(imageWidth, cellHeight*rows)
+
+	dashes := g.gridConfig.GetBorderDashes()
+	if dashes > 0 {
+		g.ctx.SetDash(dashes)
+	} else {
+		g.ctx.SetDash()
+	}
 	g.ctx.SetLineWidth(g.gridConfig.GetBorderStrokeWidth())
 	g.ctx.SetColor(g.gridConfig.GetBorderColor())
 	g.ctx.Stroke()

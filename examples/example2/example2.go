@@ -19,6 +19,7 @@ func main() {
 		Columns:           4,
 		LineDashes:        10,
 		LineStrokeWidth:   2,
+		BorderDashes:      20,
 		BorderStrokeWidth: 4,
 		LineColor:         color.RGBA{R: 255 / 2, A: 255},
 		BorderColor:       color.RGBA{B: 255 / 2, A: 255},

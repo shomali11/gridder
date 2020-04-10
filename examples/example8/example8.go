@@ -17,7 +17,7 @@ func main() {
 		Rows:              4,
 		Columns:           8,
 		LineStrokeWidth:   2,
-		BorderStrokeWidth: 18,
+		BorderStrokeWidth: 20,
 	}
 
 	grid, err := gridder.New(imageConfig, gridConfig)

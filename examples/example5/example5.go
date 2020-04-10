@@ -9,8 +9,8 @@ import (
 
 func main() {
 	imageConfig := gridder.ImageConfig{
-		Width:  1024,
-		Height: 1024,
+		Width:  500,
+		Height: 500,
 		Name:   "example5.png",
 	}
 	gridConfig := gridder.GridConfig{
@@ -24,8 +24,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	grid.DrawCircle(0, 0, gridder.CircleConfig{Radius: 60, Color: color.Black, Stroke: true})
-	grid.DrawCircle(0, 3, gridder.CircleConfig{Radius: 60, Color: color.Black, Stroke: true, StrokeWidth: 50})
-	grid.DrawCircle(3, 3, gridder.CircleConfig{Radius: 60, Color: color.Black, Stroke: false})
+	grid.DrawCircle(0, 0, gridder.CircleConfig{Radius: 30, Color: color.Black, Stroke: true})
+	grid.DrawCircle(0, 3, gridder.CircleConfig{Radius: 30, Color: color.Black, Stroke: true, StrokeWidth: 25})
+	grid.DrawCircle(3, 3, gridder.CircleConfig{Radius: 30, Color: color.Black, Stroke: false})
 	grid.SavePNG()
 }

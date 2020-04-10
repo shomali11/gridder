@@ -75,6 +75,7 @@ type GridConfig struct {
 	Columns           int
 	LineDashes        float64
 	LineStrokeWidth   float64
+	BorderDashes      float64
 	BorderStrokeWidth float64
 	LineColor         color.Color
 	BorderColor       color.Color
@@ -92,6 +93,11 @@ func (g *GridConfig) GetLineStrokeWidth() float64 {
 		return defaultGridLineStrokeWidth
 	}
 	return g.LineStrokeWidth
+}
+
+// GetBorderDashes gets border dashes
+func (g *GridConfig) GetBorderDashes() float64 {
+	return g.BorderDashes
 }
 
 // GetBorderStrokeWidth gets border stroke width

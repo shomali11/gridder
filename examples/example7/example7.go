@@ -9,8 +9,8 @@ import (
 
 func main() {
 	imageConfig := gridder.ImageConfig{
-		Width:  1024,
-		Height: 1024,
+		Width:  500,
+		Height: 500,
 		Name:   "example7.png",
 	}
 	gridConfig := gridder.GridConfig{
@@ -25,6 +25,6 @@ func main() {
 	}
 
 	grid.DrawString(1, 1, "Hello!")
-	grid.DrawString(2, 2, "Hello!", gridder.StringConfig{FontSize: 48, Color: color.RGBA{B: 255 / 2, A: 255 / 2}})
+	grid.DrawString(2, 2, "Hello!", gridder.StringConfig{FontSize: 35, Color: color.RGBA{B: 255 / 2, A: 255 / 2}})
 	grid.SavePNG()
 }
