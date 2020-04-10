@@ -1,6 +1,8 @@
 package gridder
 
-import "image/color"
+import (
+	"image/color"
+)
 
 const (
 	defaultGridPadding           = 0
@@ -8,8 +10,6 @@ const (
 	defaultGridHeight            = 500
 	defaultGridLineStrokeWidth   = 2
 	defaultGridBorderStrokeWidth = 4
-
-	defaultStringFontSize = 24
 
 	defaultLineStrokeWidth = 1
 
@@ -271,16 +271,7 @@ func (g *RectangleConfig) GetStrokeWidth() float64 {
 
 // StringConfig Grid String Configuration
 type StringConfig struct {
-	FontSize float64
-	Color    color.Color
-}
-
-// GetFontSize gets font size
-func (g *StringConfig) GetFontSize() float64 {
-	if g.FontSize <= 0 {
-		return defaultStringFontSize
-	}
-	return g.FontSize
+	Color color.Color
 }
 
 // GetColor gets color

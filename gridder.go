@@ -5,8 +5,7 @@ import (
 	"image/color"
 
 	"github.com/fogleman/gg"
-	"github.com/golang/freetype/truetype"
-	"golang.org/x/image/font/gofont/goregular"
+	"golang.org/x/image/font"
 )
 
 var (
@@ -159,7 +158,7 @@ func (g *Gridder) DrawLine(row1 int, column1 int, row2 int, column2 int, lineCon
 }
 
 // DrawString draws a string in a cell
-func (g *Gridder) DrawString(row int, column int, text string, stringConfigs ...StringConfig) error {
+func (g *Gridder) DrawString(row int, column int, text string, fontFace font.Face, stringConfigs ...StringConfig) error {
 	err := g.verifyInBounds(row, column)
 	if err != nil {
 		return err
@@ -170,13 +169,8 @@ func (g *Gridder) DrawString(row int, column int, text string, stringConfigs ...
 		return err
 	}
 
-	font, err := truetype.Parse(goregular.TTF)
-	if err != nil {
-		return err
-	}
-
 	stringConfig := getFirstStringConfig(stringConfigs...)
-	g.ctx.SetFontFace(truetype.NewFace(font, &truetype.Options{Size: stringConfig.GetFontSize()}))
+	g.ctx.SetFontFace(fontFace)
 	g.ctx.SetColor(stringConfig.GetColor())
 	g.ctx.DrawStringAnchored(text, center.X, center.Y, 0.5, 0.35)
 	return nil

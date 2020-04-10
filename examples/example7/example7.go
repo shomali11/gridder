@@ -4,7 +4,9 @@ import (
 	"image/color"
 	"log"
 
+	"github.com/golang/freetype/truetype"
 	"github.com/shomali11/gridder"
+	"golang.org/x/image/font/gofont/goregular"
 )
 
 func main() {
@@ -25,7 +27,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	grid.DrawString(1, 1, "Hello!")
-	grid.DrawString(2, 2, "Hello!", gridder.StringConfig{FontSize: 35, Color: color.RGBA{B: 255 / 2, A: 255 / 2}})
+	font, err := truetype.Parse(goregular.TTF)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fontFace1 := truetype.NewFace(font, &truetype.Options{Size: 24})
+	fontFace2 := truetype.NewFace(font, &truetype.Options{Size: 35})
+
+	grid.DrawString(1, 1, "Hello!", fontFace1)
+	grid.DrawString(2, 2, "Hello!", fontFace2, gridder.StringConfig{Color: color.RGBA{B: 255 / 2, A: 255 / 2}})
 	grid.SavePNG()
 }

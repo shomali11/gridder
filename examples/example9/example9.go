@@ -4,7 +4,9 @@ import (
 	"image/color"
 	"log"
 
+	"github.com/golang/freetype/truetype"
 	"github.com/shomali11/gridder"
+	"golang.org/x/image/font/gofont/goregular"
 )
 
 func main() {
@@ -26,8 +28,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	headerStringConfig := gridder.StringConfig{FontSize: 100}
-	valueStringConfig := gridder.StringConfig{FontSize: 50}
+	font, err := truetype.Parse(goregular.TTF)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	headerFontFace := truetype.NewFace(font, &truetype.Options{Size: 100})
+	valueFontFace := truetype.NewFace(font, &truetype.Options{Size: 50})
 
 	headers := []string{"B", "I", "N", "G", "O"}
 	values := [][]string{
@@ -41,13 +48,13 @@ func main() {
 	circleConfig := gridder.CircleConfig{Radius: 60, Color: color.White}
 	for i, header := range headers {
 		grid.DrawCircle(0, i, circleConfig)
-		grid.DrawString(0, i, header, headerStringConfig)
+		grid.DrawString(0, i, header, headerFontFace)
 	}
 
 	for row := range values {
 		for column := range values[0] {
 			grid.PaintCell(row+1, column, color.White)
-			grid.DrawString(row+1, column, values[row][column], valueStringConfig)
+			grid.DrawString(row+1, column, values[row][column], valueFontFace)
 		}
 	}
 	grid.SavePNG()
