@@ -8,8 +8,18 @@ import (
 )
 
 func main() {
-	imageConfig := gridder.ImageConfig{Name: "example9.png"}
-	gridConfig := gridder.GridConfig{Rows: 4, Columns: 8}
+	imageConfig := gridder.ImageConfig{
+		Width:  2000,
+		Height: 1000,
+		Name:   "example9.png",
+	}
+	gridConfig := gridder.GridConfig{
+		Rows:              4,
+		Columns:           8,
+		LineStrokeWidth:   2,
+		BorderStrokeWidth: 18,
+	}
+
 	grid, err := gridder.New(imageConfig, gridConfig)
 	if err != nil {
 		log.Fatal(err)

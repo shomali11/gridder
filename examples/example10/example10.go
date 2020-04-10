@@ -16,6 +16,7 @@ func main() {
 	gridConfig := gridder.GridConfig{
 		Rows:            6,
 		Columns:         5,
+		LineStrokeWidth: 2,
 		BackgroundColor: color.RGBA{R: 135, G: 211, B: 124, A: 255},
 	}
 

@@ -13,7 +13,11 @@ func main() {
 		Height: 1024,
 		Name:   "example5.png",
 	}
-	gridConfig := gridder.GridConfig{Rows: 4, Columns: 4}
+	gridConfig := gridder.GridConfig{
+		Rows:            4,
+		Columns:         4,
+		LineStrokeWidth: 2,
+	}
 
 	grid, err := gridder.New(imageConfig, gridConfig)
 	if err != nil {

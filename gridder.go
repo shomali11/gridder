@@ -10,22 +10,30 @@ import (
 )
 
 var (
-	errNoRows    = errors.New("no rows provided")
-	errNoColumns = errors.New("no columns provided")
+	errNoRows      = errors.New("no rows provided")
+	errNoColumns   = errors.New("no columns provided")
+	errOutOfBounds = errors.New("out of bounds")
 )
 
 // New creates a new gridder and sets it up with its configuration
 func New(imageConfig ImageConfig, gridConfig GridConfig) (*Gridder, error) {
+	rows := gridConfig.GetRows()
+	if rows == 0 {
+		return nil, errNoRows
+	}
+
+	columns := gridConfig.GetColumns()
+	if columns == 0 {
+		return nil, errNoColumns
+	}
+
 	gridder := Gridder{
 		imageConfig: imageConfig,
 		gridConfig:  gridConfig,
 		ctx:         gg.NewContext(imageConfig.GetWidth(), imageConfig.GetHeight()),
 	}
 	gridder.paintBackground()
-	err := gridder.paintGrid()
-	if err != nil {
-		return nil, err
-	}
+	gridder.paintGrid()
 	gridder.paintBorder()
 	return &gridder, nil
 }
@@ -44,15 +52,13 @@ func (g *Gridder) SavePNG() error {
 
 // PaintCell paints Cell
 func (g *Gridder) PaintCell(row int, column int, color color.Color) error {
-	cellWidth, err := g.getCellWidth()
+	err := g.verifyInBounds(row, column)
 	if err != nil {
 		return err
 	}
 
-	cellHeight, err := g.getCellHeight()
-	if err != nil {
-		return err
-	}
+	cellWidth := g.getCellWidth()
+	cellHeight := g.getCellHeight()
 
 	paintWidth := cellWidth - g.gridConfig.GetLineStrokeWidth()
 	paintHeight := cellHeight - g.gridConfig.GetLineStrokeWidth()
@@ -61,6 +67,11 @@ func (g *Gridder) PaintCell(row int, column int, color color.Color) error {
 
 // DrawRectangle draws a rectangle in a cell
 func (g *Gridder) DrawRectangle(row int, column int, rectangleConfigs ...RectangleConfig) error {
+	err := g.verifyInBounds(row, column)
+	if err != nil {
+		return err
+	}
+
 	center, err := g.getCellCenter(row, column)
 	if err != nil {
 		return err
@@ -87,6 +98,11 @@ func (g *Gridder) DrawRectangle(row int, column int, rectangleConfigs ...Rectang
 
 // DrawCircle draws a circle in a cell
 func (g *Gridder) DrawCircle(row int, column int, circleConfigs ...CircleConfig) error {
+	err := g.verifyInBounds(row, column)
+	if err != nil {
+		return err
+	}
+
 	center, err := g.getCellCenter(row, column)
 	if err != nil {
 		return err
@@ -107,6 +123,16 @@ func (g *Gridder) DrawCircle(row int, column int, circleConfigs ...CircleConfig)
 
 // DrawLine draws a line between two cells
 func (g *Gridder) DrawLine(row1 int, column1 int, row2 int, column2 int, lineConfigs ...LineConfig) error {
+	err := g.verifyInBounds(row1, column1)
+	if err != nil {
+		return err
+	}
+
+	err = g.verifyInBounds(row2, column2)
+	if err != nil {
+		return err
+	}
+
 	center1, err := g.getCellCenter(row1, column1)
 	if err != nil {
 		return err
@@ -134,6 +160,11 @@ func (g *Gridder) DrawLine(row1 int, column1 int, row2 int, column2 int, lineCon
 
 // DrawString draws a string in a cell
 func (g *Gridder) DrawString(row int, column int, text string, stringConfigs ...StringConfig) error {
+	err := g.verifyInBounds(row, column)
+	if err != nil {
+		return err
+	}
+
 	center, err := g.getCellCenter(row, column)
 	if err != nil {
 		return err
@@ -156,86 +187,63 @@ func (g *Gridder) paintBackground() {
 	g.ctx.Clear()
 }
 
-func (g *Gridder) paintGrid() error {
+func (g *Gridder) paintGrid() {
 	imageWidth := float64(g.imageConfig.GetWidth())
 	imageHeight := float64(g.imageConfig.GetHeight())
 
-	cellWidth, err := g.getCellWidth()
-	if err != nil {
-		return err
-	}
-
-	cellHeight, err := g.getCellHeight()
-	if err != nil {
-		return err
-	}
+	cellWidth := g.getCellWidth()
+	cellHeight := g.getCellHeight()
 
 	columns := float64(g.gridConfig.GetColumns())
-	for i := 1.0; i <= columns; i++ {
+	for i := 1.0; i < columns; i++ {
 		x := i * cellWidth
 		g.ctx.MoveTo(x, 0)
 		g.ctx.LineTo(x, imageHeight)
 	}
 
 	rows := float64(g.gridConfig.GetRows())
-	for i := 1.0; i <= rows; i++ {
+	for i := 1.0; i < rows; i++ {
 		y := i * cellHeight
 		g.ctx.MoveTo(0, y)
 		g.ctx.LineTo(imageWidth, y)
 	}
 
+	dashes := g.gridConfig.GetLineDashes()
+	if dashes > 0 {
+		g.ctx.SetDash(dashes)
+	} else {
+		g.ctx.SetDash()
+	}
 	g.ctx.SetColor(g.gridConfig.GetLineColor())
 	g.ctx.SetLineWidth(g.gridConfig.GetLineStrokeWidth())
 	g.ctx.Stroke()
-	return nil
 }
 
 func (g *Gridder) paintBorder() {
 	width := float64(g.imageConfig.GetWidth())
 	height := float64(g.imageConfig.GetHeight())
 
+	g.ctx.SetDash()
 	g.ctx.DrawRectangle(0, 0, width, height)
 	g.ctx.SetLineWidth(g.gridConfig.GetBorderStrokeWidth())
 	g.ctx.SetColor(g.gridConfig.GetBorderColor())
 	g.ctx.Stroke()
 }
 
-func (g *Gridder) getCellWidth() (float64, error) {
-	columns := g.gridConfig.GetColumns()
-	if columns == 0 {
-		return 0, errNoColumns
-	}
-	return float64(g.imageConfig.GetWidth()) / float64(g.gridConfig.GetColumns()), nil
+func (g *Gridder) getCellWidth() float64 {
+	return float64(g.imageConfig.GetWidth()) / float64(g.gridConfig.GetColumns())
 }
 
-func (g *Gridder) getCellHeight() (float64, error) {
-	rows := g.gridConfig.GetRows()
-	if rows == 0 {
-		return 0, errNoRows
-	}
-	return float64(g.imageConfig.GetHeight()) / float64(g.gridConfig.GetRows()), nil
+func (g *Gridder) getCellHeight() float64 {
+	return float64(g.imageConfig.GetHeight()) / float64(g.gridConfig.GetRows())
 }
 
 func (g *Gridder) getCellCenter(row, column int) (*gg.Point, error) {
 	columns := float64(g.gridConfig.GetColumns())
-	if columns == 0 {
-		return nil, errNoColumns
-	}
-
 	rows := float64(g.gridConfig.GetRows())
-	if rows == 0 {
-		return nil, errNoRows
-	}
 
-	cellWidth, err := g.getCellWidth()
-	if err != nil {
-		return nil, err
-	}
-
-	cellHeight, err := g.getCellHeight()
-	if err != nil {
-		return nil, err
-	}
+	cellWidth := g.getCellWidth()
+	cellHeight := g.getCellHeight()
 
 	imageWidth := float64(g.imageConfig.GetWidth())
 	imageHeight := float64(g.imageConfig.GetHeight())
@@ -243,4 +251,13 @@ func (g *Gridder) getCellCenter(row, column int) (*gg.Point, error) {
 	x := float64(column)*(imageWidth/columns) + cellWidth/2
 	y := float64(row)*(imageHeight/rows) + cellHeight/2
 	return &gg.Point{X: x, Y: y}, nil
+}
+
+func (g *Gridder) verifyInBounds(row, column int) error {
+	columns := g.gridConfig.GetColumns()
+	rows := g.gridConfig.GetRows()
+	if row < 0 || row >= rows || column < 0 || column >= columns {
+		return errOutOfBounds
+	}
+	return nil
 }

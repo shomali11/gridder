@@ -4,8 +4,8 @@ import "image/color"
 
 const (
 	defaultGridPadding           = 32
-	defaultGridWidth             = 1024 * 2
-	defaultGridHeight            = 1024
+	defaultGridWidth             = 500 * 2
+	defaultGridHeight            = 500
 	defaultGridLineStrokeWidth   = 2
 	defaultGridBorderStrokeWidth = 4
 
@@ -73,6 +73,7 @@ func (g *ImageConfig) GetName() string {
 type GridConfig struct {
 	Rows              int
 	Columns           int
+	LineDashes        float64
 	LineStrokeWidth   float64
 	BorderStrokeWidth float64
 	LineColor         color.Color
@@ -80,9 +81,14 @@ type GridConfig struct {
 	BackgroundColor   color.Color
 }
 
+// GetLineDashes gets line dashes
+func (g *GridConfig) GetLineDashes() float64 {
+	return g.LineDashes
+}
+
 // GetLineStrokeWidth gets line stroke width
 func (g *GridConfig) GetLineStrokeWidth() float64 {
-	if g.LineStrokeWidth <= 0 {
+	if g.LineStrokeWidth < 0 {
 		return defaultGridLineStrokeWidth
 	}
 	return g.LineStrokeWidth
@@ -90,7 +96,7 @@ func (g *GridConfig) GetLineStrokeWidth() float64 {
 
 // GetBorderStrokeWidth gets border stroke width
 func (g *GridConfig) GetBorderStrokeWidth() float64 {
-	if g.BorderStrokeWidth <= 0 {
+	if g.BorderStrokeWidth < 0 {
 		return defaultGridBorderStrokeWidth
 	}
 	return g.BorderStrokeWidth
@@ -122,11 +128,17 @@ func (g *GridConfig) GetBackgroundColor() color.Color {
 
 // GetRows gets rows
 func (g *GridConfig) GetRows() int {
+	if g.Rows < 0 {
+		return 0
+	}
 	return g.Rows
 }
 
 // GetColumns gets columns
 func (g *GridConfig) GetColumns() int {
+	if g.Columns < 0 {
+		return 0
+	}
 	return g.Columns
 }
 
