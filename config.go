@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	defaultGridPadding           = 0
 	defaultGridWidth             = 500 * 2
 	defaultGridHeight            = 500
+	defaultGridMarginWidth       = 0
 	defaultGridLineStrokeWidth   = 2
 	defaultGridBorderStrokeWidth = 4
 
@@ -34,10 +34,9 @@ var (
 
 // ImageConfig Grid Configuration
 type ImageConfig struct {
-	Width   int
-	Height  int
-	Padding int
-	Name    string
+	Width  int
+	Height int
+	Name   string
 }
 
 // GetWidth gets image width
@@ -56,24 +55,6 @@ func (g *ImageConfig) GetHeight() int {
 	return g.Height
 }
 
-// GetCanvasWidth gets canvas width
-func (g *ImageConfig) GetCanvasWidth() int {
-	return g.GetWidth() - g.GetPadding()*2
-}
-
-// GetCanvasHeight gets canvas height
-func (g *ImageConfig) GetCanvasHeight() int {
-	return g.GetHeight() - g.GetPadding()*2
-}
-
-// GetPadding gets image padding
-func (g *ImageConfig) GetPadding() int {
-	if g.Padding < 0 {
-		return defaultGridPadding
-	}
-	return g.Padding
-}
-
 // GetName gets image name
 func (g *ImageConfig) GetName() string {
 	return g.Name
@@ -83,6 +64,7 @@ func (g *ImageConfig) GetName() string {
 type GridConfig struct {
 	Rows              int
 	Columns           int
+	MarginWidth       int
 	LineDashes        float64
 	LineStrokeWidth   float64
 	BorderDashes      float64
@@ -90,6 +72,24 @@ type GridConfig struct {
 	LineColor         color.Color
 	BorderColor       color.Color
 	BackgroundColor   color.Color
+}
+
+// GetWidth gets grid width
+func (g *GridConfig) GetWidth(imageWidth int) int {
+	return imageWidth - g.GetMarginWidth()*2
+}
+
+// GetHeight gets grid height
+func (g *GridConfig) GetHeight(imageHeight int) int {
+	return imageHeight - g.GetMarginWidth()*2
+}
+
+// GetMarginWidth gets margin width
+func (g *GridConfig) GetMarginWidth() int {
+	if g.MarginWidth < 0 {
+		return defaultGridMarginWidth
+	}
+	return g.MarginWidth
 }
 
 // GetLineDashes gets line dashes

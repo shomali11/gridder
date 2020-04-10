@@ -12,8 +12,10 @@ func main() {
 	gridConfig := gridder.GridConfig{
 		Rows:              4,
 		Columns:           8,
+		MarginWidth:       0,
 		LineDashes:        0,
 		LineStrokeWidth:   2,
+		BorderDashes:      0,
 		BorderStrokeWidth: 10,
 		LineColor:         color.Gray{},
 		BorderColor:       color.RGBA{B: 255, A: 255},

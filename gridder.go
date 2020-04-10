@@ -56,9 +56,7 @@ func (g *Gridder) PaintCell(row int, column int, color color.Color) error {
 		return err
 	}
 
-	cellWidth := g.getCellWidth()
-	cellHeight := g.getCellHeight()
-
+	cellWidth, cellHeight := g.getCellDimensions()
 	paintWidth := cellWidth - g.gridConfig.GetLineStrokeWidth()
 	paintHeight := cellHeight - g.gridConfig.GetLineStrokeWidth()
 	return g.DrawRectangle(row, column, RectangleConfig{Width: paintWidth, Height: paintHeight, Color: color})
@@ -177,18 +175,15 @@ func (g *Gridder) DrawString(row int, column int, text string, fontFace font.Fac
 }
 
 func (g *Gridder) paintBackground() {
-	padding := float64(g.imageConfig.GetPadding())
-	g.ctx.Translate(padding, padding)
+	margin := float64(g.gridConfig.GetMarginWidth())
+	g.ctx.Translate(margin, margin)
 	g.ctx.SetColor(g.gridConfig.GetBackgroundColor())
 	g.ctx.Clear()
 }
 
 func (g *Gridder) paintGrid() {
-	canvasWidth := float64(g.imageConfig.GetCanvasWidth())
-	canvasHeight := float64(g.imageConfig.GetCanvasHeight())
-
-	cellWidth := g.getCellWidth()
-	cellHeight := g.getCellHeight()
+	canvasWidth, canvasHeight := g.getGridDimensions()
+	cellWidth, cellHeight := g.getCellDimensions()
 
 	columns := float64(g.gridConfig.GetColumns())
 	for i := 1.0; i < columns; i++ {
@@ -216,11 +211,8 @@ func (g *Gridder) paintGrid() {
 }
 
 func (g *Gridder) paintBorder() {
-	canvasWidth := float64(g.imageConfig.GetCanvasWidth())
-	canvasHeight := float64(g.imageConfig.GetCanvasHeight())
-
-	cellWidth := g.getCellWidth()
-	cellHeight := g.getCellHeight()
+	canvasWidth, canvasHeight := g.getGridDimensions()
+	cellWidth, cellHeight := g.getCellDimensions()
 
 	columns := float64(g.gridConfig.GetColumns())
 	g.ctx.MoveTo(0, 0)
@@ -245,26 +237,31 @@ func (g *Gridder) paintBorder() {
 	g.ctx.Stroke()
 }
 
-func (g *Gridder) getCellWidth() float64 {
-	return float64(g.imageConfig.GetCanvasWidth()) / float64(g.gridConfig.GetColumns())
+func (g *Gridder) getCellDimensions() (float64, float64) {
+	gridWidth, gridHeight := g.getGridDimensions()
+	cellWidth := gridWidth / float64(g.gridConfig.GetColumns())
+	cellHeight := gridHeight / float64(g.gridConfig.GetRows())
+	return cellWidth, cellHeight
 }
 
-func (g *Gridder) getCellHeight() float64 {
-	return float64(g.imageConfig.GetCanvasHeight()) / float64(g.gridConfig.GetRows())
+func (g *Gridder) getGridDimensions() (float64, float64) {
+	imageWidth := g.imageConfig.GetWidth()
+	imageHeight := g.imageConfig.GetHeight()
+
+	gridWidth := float64(g.gridConfig.GetWidth(imageWidth))
+	gridHeight := float64(g.gridConfig.GetHeight(imageHeight))
+	return gridWidth, gridHeight
 }
 
 func (g *Gridder) getCellCenter(row, column int) (*gg.Point, error) {
 	columns := float64(g.gridConfig.GetColumns())
 	rows := float64(g.gridConfig.GetRows())
 
-	cellWidth := g.getCellWidth()
-	cellHeight := g.getCellHeight()
+	cellWidth, cellHeight := g.getCellDimensions()
+	gridWidth, gridHeight := g.getGridDimensions()
 
-	canvasWidth := float64(g.imageConfig.GetCanvasWidth())
-	canvasHeight := float64(g.imageConfig.GetCanvasHeight())
-
-	x := float64(column)*(canvasWidth/columns) + cellWidth/2
-	y := float64(row)*(canvasHeight/rows) + cellHeight/2
+	x := float64(column)*(gridWidth/columns) + cellWidth/2
+	y := float64(row)*(gridHeight/rows) + cellHeight/2
 	return &gg.Point{X: x, Y: y}, nil
 }
 

@@ -9,14 +9,14 @@ import (
 
 func main() {
 	imageConfig := gridder.ImageConfig{
-		Width:   500,
-		Height:  500,
-		Padding: 20,
-		Name:    "example2.png",
+		Width:  500,
+		Height: 500,
+		Name:   "example2.png",
 	}
 	gridConfig := gridder.GridConfig{
 		Rows:              4,
 		Columns:           4,
+		MarginWidth:       20,
 		LineDashes:        10,
 		LineStrokeWidth:   2,
 		BorderDashes:      20,
