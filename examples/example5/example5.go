@@ -24,8 +24,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	grid.DrawRectangle(0, 0, gridder.RectangleConfig{Width: 120, Height: 120, Color: color.Black, Stroke: true})
-	grid.DrawRectangle(0, 3, gridder.RectangleConfig{Width: 120, Height: 120, Color: color.Black, Stroke: true, StrokeWidth: 50})
-	grid.DrawRectangle(3, 3, gridder.RectangleConfig{Width: 120, Height: 120, Color: color.Black, Stroke: false})
+	grid.DrawCircle(0, 0, gridder.CircleConfig{Radius: 60, Color: color.Black, Stroke: true})
+	grid.DrawCircle(0, 3, gridder.CircleConfig{Radius: 60, Color: color.Black, Stroke: true, StrokeWidth: 50})
+	grid.DrawCircle(3, 3, gridder.CircleConfig{Radius: 60, Color: color.Black, Stroke: false})
 	grid.SavePNG()
 }

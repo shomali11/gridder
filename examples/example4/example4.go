@@ -24,6 +24,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	grid.PaintCell(1, 2, color.Black)
+	grid.DrawRectangle(0, 0, gridder.RectangleConfig{Width: 120, Height: 120, Color: color.Black, Stroke: true})
+	grid.DrawRectangle(0, 3, gridder.RectangleConfig{Width: 120, Height: 120, Color: color.Black, Stroke: true, StrokeWidth: 50})
+	grid.DrawRectangle(3, 3, gridder.RectangleConfig{Width: 120, Height: 120, Color: color.Black, Stroke: false})
 	grid.SavePNG()
 }

@@ -11,7 +11,7 @@ func main() {
 	imageConfig := gridder.ImageConfig{
 		Width:  1024,
 		Height: 1024,
-		Name:   "example7.png",
+		Name:   "example3.png",
 	}
 	gridConfig := gridder.GridConfig{
 		Rows:            4,
@@ -24,7 +24,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	grid.DrawString(1, 1, "Hello!")
-	grid.DrawString(2, 2, "Hello!", gridder.StringConfig{FontSize: 48, Color: color.RGBA{B: 255 / 2, A: 255 / 2}})
+	grid.PaintCell(1, 2, color.Black)
 	grid.SavePNG()
 }
