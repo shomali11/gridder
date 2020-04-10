@@ -16,7 +16,7 @@ func main() {
 		LineStrokeWidth:   2,
 		BorderStrokeWidth: 10,
 		LineColor:         color.Gray{},
-		BorderColor:       color.Gray{},
+		BorderColor:       color.RGBA{B: 255, A: 255},
 		BackgroundColor:   color.White,
 	}
 
