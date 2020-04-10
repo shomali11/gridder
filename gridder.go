@@ -54,8 +54,8 @@ func (g *Gridder) PaintCell(row int, column int, color color.Color) error {
 		return err
 	}
 
-	paintWidth := cellWidth - g.gridConfig.GetLineStrokeWidth()*2
-	paintHeight := cellHeight - g.gridConfig.GetLineStrokeWidth()*2
+	paintWidth := cellWidth - g.gridConfig.GetLineStrokeWidth()
+	paintHeight := cellHeight - g.gridConfig.GetLineStrokeWidth()
 	return g.DrawRectangle(row, column, RectangleConfig{Width: paintWidth, Height: paintHeight, Color: color})
 }
 
