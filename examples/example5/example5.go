@@ -26,6 +26,7 @@ func main() {
 
 	grid.DrawCircle(0, 0, gridder.CircleConfig{Radius: 30, Color: color.Black, Stroke: true})
 	grid.DrawCircle(0, 3, gridder.CircleConfig{Radius: 30, Color: color.Black, Stroke: true, StrokeWidth: 25})
+	grid.DrawCircle(2, 1, gridder.CircleConfig{Radius: 90, Color: color.RGBA{R: 255 / 2, A: 255 / 2}})
 	grid.DrawCircle(3, 3, gridder.CircleConfig{Radius: 30, Color: color.Black, Stroke: false})
 	grid.SavePNG()
 }
