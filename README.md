@@ -57,7 +57,7 @@ func main() {
 
 ## Example 2
 
-Exploring the `ImageConfig` configuration object. This defines the image that will be generated. You can customize the `width` and `height` to generate larger images.
+Exploring the `ImageConfig` configuration object. This defines the image that will be generated. You can customize the `Width` and `Height` to generate larger images.
 
 ```go
 package main
