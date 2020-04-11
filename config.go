@@ -11,6 +11,7 @@ const (
 	defaultGridLineStrokeWidth   = 2
 	defaultGridBorderStrokeWidth = 4
 
+	defaultLineLength      = 10
 	defaultLineStrokeWidth = 1
 
 	defaultCircleRadius      = 10
@@ -158,11 +159,54 @@ func (g *GridConfig) GetColumns() int {
 	return g.Columns
 }
 
-// LineConfig Line Configuration
-type LineConfig struct {
+// PathConfig Path Configuration
+type PathConfig struct {
 	StrokeWidth float64
 	Dashes      float64
 	Color       color.Color
+}
+
+// GetStrokeWidth gets stroke width
+func (g *PathConfig) GetStrokeWidth() float64 {
+	if g.StrokeWidth <= 0 {
+		return defaultLineStrokeWidth
+	}
+	return g.StrokeWidth
+}
+
+// GetColor gets color
+func (g *PathConfig) GetColor() color.Color {
+	if g.Color == nil {
+		return defaultLineColor
+	}
+	return g.Color
+}
+
+// GetDashes gets dashes
+func (g *PathConfig) GetDashes() float64 {
+	return g.Dashes
+}
+
+// LineConfig Line Configuration
+type LineConfig struct {
+	Length      float64
+	Rotate      float64
+	StrokeWidth float64
+	Dashes      float64
+	Color       color.Color
+}
+
+// GetLength gets length
+func (g *LineConfig) GetLength() float64 {
+	if g.Length <= 0 {
+		return defaultLineLength
+	}
+	return g.Length
+}
+
+// GetRotate gets rotation
+func (g *LineConfig) GetRotate() float64 {
+	return g.Rotate
 }
 
 // GetStrokeWidth gets stroke width
@@ -227,6 +271,7 @@ func (g *CircleConfig) GetStrokeWidth() float64 {
 type RectangleConfig struct {
 	Width       float64
 	Height      float64
+	Rotate      float64
 	Color       color.Color
 	Stroke      bool
 	StrokeWidth float64
@@ -246,6 +291,11 @@ func (g *RectangleConfig) GetHeight() float64 {
 		return defaultRectangleHeight
 	}
 	return g.Height
+}
+
+// GetRotate gets rotation
+func (g *RectangleConfig) GetRotate() float64 {
+	return g.Rotate
 }
 
 // GetColor gets color
@@ -271,7 +321,13 @@ func (g *RectangleConfig) GetStrokeWidth() float64 {
 
 // StringConfig Grid String Configuration
 type StringConfig struct {
-	Color color.Color
+	Rotate float64
+	Color  color.Color
+}
+
+// GetRotate gets rotatio
+func (g *StringConfig) GetRotate() float64 {
+	return g.Rotate
 }
 
 // GetColor gets color
@@ -292,6 +348,13 @@ func getFirstRectangleConfig(configs ...RectangleConfig) RectangleConfig {
 func getFirstCircleConfig(configs ...CircleConfig) CircleConfig {
 	if len(configs) == 0 {
 		return CircleConfig{}
+	}
+	return configs[0]
+}
+
+func getFirstPathConfig(configs ...PathConfig) PathConfig {
+	if len(configs) == 0 {
+		return PathConfig{}
 	}
 	return configs[0]
 }

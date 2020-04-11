@@ -11,16 +11,16 @@ import (
 
 func main() {
 	imageConfig := gridder.ImageConfig{
-		Width:  1000,
-		Height: 1200,
+		Width:  2000,
+		Height: 1000,
 		Name:   "example9.png",
 	}
 	gridConfig := gridder.GridConfig{
-		Rows:            6,
-		Columns:         5,
-		MarginWidth:     32,
-		LineStrokeWidth: 2,
-		BackgroundColor: color.RGBA{R: 135, G: 211, B: 124, A: 255},
+		Rows:              4,
+		Columns:           8,
+		MarginWidth:       32,
+		LineStrokeWidth:   2,
+		BorderStrokeWidth: 20,
 	}
 
 	grid, err := gridder.New(imageConfig, gridConfig)
@@ -33,29 +33,29 @@ func main() {
 		log.Fatal(err)
 	}
 
-	headerFontFace := truetype.NewFace(font, &truetype.Options{Size: 100})
-	valueFontFace := truetype.NewFace(font, &truetype.Options{Size: 50})
+	fontFace := truetype.NewFace(font, &truetype.Options{Size: 48})
 
-	headers := []string{"B", "I", "N", "G", "O"}
-	values := [][]string{
-		{"10", "22", "41", "53", "71"},
-		{"66", "20", "40", "50", "2"},
-		{"14", "26", "FREE", "52", "69"},
-		{"15", "29", "37", "51", "65"},
-		{"17", "6", "35", "55", "64"},
-	}
+	lineConfig := gridder.PathConfig{Dashes: 10}
+	circleConfig := gridder.CircleConfig{Color: color.Gray{}, Radius: 10}
 
-	circleConfig := gridder.CircleConfig{Radius: 60, Color: color.White}
-	for i, header := range headers {
-		grid.DrawCircle(0, i, circleConfig)
-		grid.DrawString(0, i, header, headerFontFace)
-	}
+	grid.PaintCell(1, 2, color.NRGBA{R: 0, G: 0, B: 0, A: 255 / 2})
+	grid.DrawString(1, 2, "Block", fontFace)
 
-	for row := range values {
-		for column := range values[0] {
-			grid.PaintCell(row+1, column, color.White)
-			grid.DrawString(row+1, column, values[row][column], valueFontFace)
-		}
-	}
+	grid.DrawCircle(0, 0, gridder.CircleConfig{Color: color.NRGBA{R: 255 / 2, G: 0, B: 0, A: 255 / 2}, Radius: 60})
+	grid.DrawPath(0, 0, 1, 1, lineConfig)
+	grid.DrawCircle(1, 1, circleConfig)
+	grid.DrawPath(1, 1, 2, 2, lineConfig)
+	grid.DrawCircle(2, 2, circleConfig)
+	grid.DrawPath(2, 2, 2, 3, lineConfig)
+	grid.DrawCircle(2, 3, circleConfig)
+	grid.DrawPath(2, 3, 2, 4, lineConfig)
+	grid.DrawCircle(2, 4, circleConfig)
+	grid.DrawPath(2, 4, 2, 5, lineConfig)
+	grid.DrawCircle(2, 5, circleConfig)
+	grid.DrawPath(2, 5, 2, 6, lineConfig)
+	grid.DrawCircle(2, 6, circleConfig)
+	grid.DrawPath(2, 6, 3, 7, lineConfig)
+	grid.DrawCircle(3, 7, gridder.CircleConfig{Color: color.NRGBA{R: 0, G: 255 / 2, B: 0, A: 255 / 2}, Radius: 60})
+
 	grid.SavePNG()
 }

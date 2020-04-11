@@ -16,6 +16,7 @@ func main() {
 	gridConfig := gridder.GridConfig{
 		Rows:              4,
 		Columns:           4,
+		MarginWidth:       30,
 		LineStrokeWidth:   2,
 		BorderStrokeWidth: 4,
 	}
@@ -25,9 +26,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	grid.DrawLine(0, 0, 1, 1, gridder.LineConfig{Dashes: 0, StrokeWidth: 10, Color: color.Black})
-	grid.DrawLine(1, 1, 2, 1, gridder.LineConfig{Dashes: 5, StrokeWidth: 1, Color: color.Black})
-	grid.DrawLine(2, 1, 3, 1, gridder.LineConfig{Dashes: 8, StrokeWidth: 1, Color: color.Black})
-	grid.DrawLine(3, 1, 3, 2, gridder.LineConfig{Dashes: 0, StrokeWidth: 1, Color: color.Black})
+	grid.DrawLine(0, 0, gridder.LineConfig{Length: 60, Color: color.Black, Dashes: 0})
+	grid.DrawLine(0, 0, gridder.LineConfig{Length: 60, Color: color.Black, Dashes: 0, Rotate: 90})
+	grid.DrawLine(0, 3, gridder.LineConfig{Length: 60, Color: color.Black, Dashes: 0, StrokeWidth: 25})
+	grid.DrawLine(2, 1, gridder.LineConfig{Length: 90, Color: color.RGBA{R: 255 / 2, A: 255 / 2}, Rotate: 45})
+	grid.DrawLine(2, 1, gridder.LineConfig{Length: 90, Color: color.RGBA{R: 255 / 2, A: 255 / 2}, Rotate: 135})
+	grid.DrawLine(3, 3, gridder.LineConfig{Length: 60, Color: color.Black, Dashes: 5})
 	grid.SavePNG()
 }

@@ -81,15 +81,17 @@ func (g *Gridder) DrawRectangle(row int, column int, rectangleConfigs ...Rectang
 	x := center.X - rectangleWidth/2
 	y := center.Y - rectangleHeight/2
 
+	g.ctx.Push()
+	g.ctx.RotateAbout(gg.Radians(rectangleConfig.GetRotate()), center.X, center.Y)
 	g.ctx.DrawRectangle(x, y, rectangleWidth, rectangleHeight)
 	g.ctx.SetLineWidth(rectangleConfig.GetStrokeWidth())
 	g.ctx.SetColor(rectangleConfig.GetColor())
-
 	if rectangleConfig.IsStroke() {
 		g.ctx.Stroke()
 	} else {
 		g.ctx.Fill()
 	}
+	g.ctx.Pop()
 	return nil
 }
 
@@ -106,20 +108,22 @@ func (g *Gridder) DrawCircle(row int, column int, circleConfigs ...CircleConfig)
 	}
 
 	circleConfig := getFirstCircleConfig(circleConfigs...)
+
+	g.ctx.Push()
 	g.ctx.DrawPoint(center.X, center.Y, circleConfig.GetRadius())
 	g.ctx.SetLineWidth(circleConfig.GetStrokeWidth())
 	g.ctx.SetColor(circleConfig.GetColor())
-
 	if circleConfig.IsStroke() {
 		g.ctx.Stroke()
 	} else {
 		g.ctx.Fill()
 	}
+	g.ctx.Pop()
 	return nil
 }
 
-// DrawLine draws a line between two cells
-func (g *Gridder) DrawLine(row1 int, column1 int, row2 int, column2 int, lineConfigs ...LineConfig) error {
+// DrawPath draws a path between two cells
+func (g *Gridder) DrawPath(row1 int, column1 int, row2 int, column2 int, pathConfigs ...PathConfig) error {
 	err := g.verifyInBounds(row1, column1)
 	if err != nil {
 		return err
@@ -140,18 +144,55 @@ func (g *Gridder) DrawLine(row1 int, column1 int, row2 int, column2 int, lineCon
 		return err
 	}
 
+	pathConfig := getFirstPathConfig(pathConfigs...)
+
+	g.ctx.Push()
+	dashes := pathConfig.GetDashes()
+	if dashes > 0 {
+		g.ctx.SetDash(dashes)
+	} else {
+		g.ctx.SetDash()
+	}
+	g.ctx.SetColor(pathConfig.GetColor())
+	g.ctx.SetLineWidth(pathConfig.GetStrokeWidth())
+	g.ctx.DrawLine(center1.X, center1.Y, center2.X, center2.Y)
+	g.ctx.Stroke()
+	g.ctx.Pop()
+	return nil
+}
+
+// DrawLine draws a line in a cell
+func (g *Gridder) DrawLine(row int, column int, lineConfigs ...LineConfig) error {
+	err := g.verifyInBounds(row, column)
+	if err != nil {
+		return err
+	}
+
+	center, err := g.getCellCenter(row, column)
+	if err != nil {
+		return err
+	}
+
 	lineConfig := getFirstLineConfig(lineConfigs...)
+	length := lineConfig.GetLength()
+
+	x1 := center.X - length/2
+	x2 := center.X + length/2
+	y := center.Y
+
+	g.ctx.Push()
 	dashes := lineConfig.GetDashes()
 	if dashes > 0 {
 		g.ctx.SetDash(dashes)
 	} else {
 		g.ctx.SetDash()
 	}
-
-	g.ctx.SetColor(lineConfig.GetColor())
+	g.ctx.RotateAbout(gg.Radians(lineConfig.GetRotate()), center.X, center.Y)
+	g.ctx.DrawLine(x1, y, x2, y)
 	g.ctx.SetLineWidth(lineConfig.GetStrokeWidth())
-	g.ctx.DrawLine(center1.X, center1.Y, center2.X, center2.Y)
+	g.ctx.SetColor(lineConfig.GetColor())
 	g.ctx.Stroke()
+	g.ctx.Pop()
 	return nil
 }
 
@@ -168,9 +209,12 @@ func (g *Gridder) DrawString(row int, column int, text string, fontFace font.Fac
 	}
 
 	stringConfig := getFirstStringConfig(stringConfigs...)
+	g.ctx.Push()
 	g.ctx.SetFontFace(fontFace)
 	g.ctx.SetColor(stringConfig.GetColor())
+	g.ctx.RotateAbout(gg.Radians(stringConfig.GetRotate()), center.X, center.Y)
 	g.ctx.DrawStringAnchored(text, center.X, center.Y, 0.5, 0.35)
+	g.ctx.Pop()
 	return nil
 }
 
@@ -186,6 +230,8 @@ func (g *Gridder) paintGrid() {
 	cellWidth, cellHeight := g.getCellDimensions()
 
 	columns := float64(g.gridConfig.GetColumns())
+
+	g.ctx.Push()
 	for i := 1.0; i < columns; i++ {
 		x := i * cellWidth
 		g.ctx.MoveTo(x, 0)
@@ -208,6 +254,7 @@ func (g *Gridder) paintGrid() {
 	g.ctx.SetColor(g.gridConfig.GetLineColor())
 	g.ctx.SetLineWidth(g.gridConfig.GetLineStrokeWidth())
 	g.ctx.Stroke()
+	g.ctx.Pop()
 }
 
 func (g *Gridder) paintBorder() {
@@ -215,6 +262,7 @@ func (g *Gridder) paintBorder() {
 	cellWidth, cellHeight := g.getCellDimensions()
 
 	columns := float64(g.gridConfig.GetColumns())
+	g.ctx.Push()
 	g.ctx.MoveTo(0, 0)
 	g.ctx.LineTo(0, canvasHeight)
 	g.ctx.MoveTo(cellWidth*columns, 0)
@@ -235,6 +283,7 @@ func (g *Gridder) paintBorder() {
 	g.ctx.SetLineWidth(g.gridConfig.GetBorderStrokeWidth())
 	g.ctx.SetColor(g.gridConfig.GetBorderColor())
 	g.ctx.Stroke()
+	g.ctx.Pop()
 }
 
 func (g *Gridder) getCellDimensions() (float64, float64) {
