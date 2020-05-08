@@ -8,18 +8,18 @@ const (
 	defaultGridWidth             = 500 * 2
 	defaultGridHeight            = 500
 	defaultGridMarginWidth       = 0
-	defaultGridLineStrokeWidth   = 2
-	defaultGridBorderStrokeWidth = 4
+	defaultGridLineStrokeWidth   = 2.0
+	defaultGridBorderStrokeWidth = 4.0
 
-	defaultLineLength      = 10
-	defaultLineStrokeWidth = 1
+	defaultLineLength      = 10.0
+	defaultLineStrokeWidth = 1.0
 
-	defaultCircleRadius      = 10
-	defaultCircleStrokeWidth = 1
+	defaultCircleRadius      = 10.0
+	defaultCircleStrokeWidth = 1.0
 
-	defaultRectangleWidth       = 20
-	defaultRectangleHeight      = 20
-	defaultRectangleStrokeWidth = 1
+	defaultRectangleWidth       = 20.0
+	defaultRectangleHeight      = 20.0
+	defaultRectangleStrokeWidth = 1.0
 )
 
 var (
