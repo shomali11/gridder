@@ -234,6 +234,7 @@ func (g *LineConfig) GetDashes() float64 {
 type CircleConfig struct {
 	Radius      float64
 	Color       color.Color
+	Dashes      float64
 	Stroke      bool
 	StrokeWidth float64
 }
@@ -244,6 +245,11 @@ func (g *CircleConfig) GetRadius() float64 {
 		return defaultCircleRadius
 	}
 	return g.Radius
+}
+
+// GetDashes gets dashes
+func (g *CircleConfig) GetDashes() float64 {
+	return g.Dashes
 }
 
 // GetColor gets color
@@ -272,6 +278,7 @@ type RectangleConfig struct {
 	Width       float64
 	Height      float64
 	Rotate      float64
+	Dashes      float64
 	Color       color.Color
 	Stroke      bool
 	StrokeWidth float64
@@ -296,6 +303,11 @@ func (g *RectangleConfig) GetHeight() float64 {
 // GetRotate gets rotation
 func (g *RectangleConfig) GetRotate() float64 {
 	return g.Rotate
+}
+
+// GetDashes gets dashes
+func (g *RectangleConfig) GetDashes() float64 {
+	return g.Dashes
 }
 
 // GetColor gets color

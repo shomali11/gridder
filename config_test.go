@@ -84,12 +84,14 @@ func TestLineConfig(t *testing.T) {
 func TestCircleConfig(t *testing.T) {
 	config1 := &CircleConfig{}
 	assert.Equal(t, config1.GetRadius(), defaultCircleRadius)
+	assert.Equal(t, config1.GetDashes(), 0.0)
 	assert.Equal(t, config1.IsStroke(), false)
 	assert.Equal(t, config1.GetStrokeWidth(), defaultCircleStrokeWidth)
 	assert.Equal(t, config1.GetColor(), defaultCircleColor)
 
-	config2 := &CircleConfig{Radius: 1, Stroke: true, StrokeWidth: 10, Color: color.White}
+	config2 := &CircleConfig{Radius: 1, Dashes: 1, Stroke: true, StrokeWidth: 10, Color: color.White}
 	assert.Equal(t, config2.GetRadius(), 1.0)
+	assert.Equal(t, config2.GetDashes(), 1.0)
 	assert.Equal(t, config2.IsStroke(), true)
 	assert.Equal(t, config2.GetStrokeWidth(), 10.0)
 	assert.Equal(t, config2.GetColor(), color.White)
@@ -100,14 +102,16 @@ func TestRectangleConfig(t *testing.T) {
 	assert.Equal(t, config1.GetWidth(), defaultRectangleWidth)
 	assert.Equal(t, config1.GetHeight(), defaultRectangleHeight)
 	assert.Equal(t, config1.GetRotate(), 0.0)
+	assert.Equal(t, config1.GetDashes(), 0.0)
 	assert.Equal(t, config1.IsStroke(), false)
 	assert.Equal(t, config1.GetStrokeWidth(), defaultRectangleStrokeWidth)
 	assert.Equal(t, config1.GetColor(), defaultRectangleColor)
 
-	config2 := &RectangleConfig{Width: 1, Height: 2, Rotate: 90, Stroke: true, StrokeWidth: 10, Color: color.White}
+	config2 := &RectangleConfig{Width: 1, Height: 2, Rotate: 90, Dashes: 1, Stroke: true, StrokeWidth: 10, Color: color.White}
 	assert.Equal(t, config2.GetWidth(), 1.0)
 	assert.Equal(t, config2.GetHeight(), 2.0)
 	assert.Equal(t, config2.GetRotate(), 90.0)
+	assert.Equal(t, config2.GetDashes(), 1.0)
 	assert.Equal(t, config2.IsStroke(), true)
 	assert.Equal(t, config2.GetStrokeWidth(), 10.0)
 	assert.Equal(t, config2.GetColor(), color.White)

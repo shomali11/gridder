@@ -78,6 +78,12 @@ func (g *Gridder) DrawRectangle(row int, column int, rectangleConfigs ...Rectang
 	y := center.Y - rectangleHeight/2
 
 	g.ctx.Push()
+	dashes := rectangleConfig.GetDashes()
+	if dashes > 0 {
+		g.ctx.SetDash(dashes)
+	} else {
+		g.ctx.SetDash()
+	}
 	g.ctx.RotateAbout(gg.Radians(rectangleConfig.GetRotate()), center.X, center.Y)
 	g.ctx.DrawRectangle(x, y, rectangleWidth, rectangleHeight)
 	g.ctx.SetLineWidth(rectangleConfig.GetStrokeWidth())
@@ -102,6 +108,12 @@ func (g *Gridder) DrawCircle(row int, column int, circleConfigs ...CircleConfig)
 	circleConfig := getFirstCircleConfig(circleConfigs...)
 
 	g.ctx.Push()
+	dashes := circleConfig.GetDashes()
+	if dashes > 0 {
+		g.ctx.SetDash(dashes)
+	} else {
+		g.ctx.SetDash()
+	}
 	g.ctx.DrawPoint(center.X, center.Y, circleConfig.GetRadius())
 	g.ctx.SetLineWidth(circleConfig.GetStrokeWidth())
 	g.ctx.SetColor(circleConfig.GetColor())
