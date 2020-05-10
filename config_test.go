@@ -122,3 +122,43 @@ func TestStringConfig(t *testing.T) {
 	assert.Equal(t, config2.GetRotate(), 1.0)
 	assert.Equal(t, config2.GetColor(), color.White)
 }
+
+func TestFirstRectangleConfig(t *testing.T) {
+	config1 := getFirstRectangleConfig()
+	assert.Equal(t, config1, RectangleConfig{})
+
+	config2 := getFirstRectangleConfig(config1)
+	assert.Equal(t, config2, config1)
+}
+
+func TestFirstCircleConfig(t *testing.T) {
+	config1 := getFirstCircleConfig()
+	assert.Equal(t, config1, CircleConfig{})
+
+	config2 := getFirstCircleConfig(config1)
+	assert.Equal(t, config2, config1)
+}
+
+func TestFirstLineConfig(t *testing.T) {
+	config1 := getFirstLineConfig()
+	assert.Equal(t, config1, LineConfig{})
+
+	config2 := getFirstLineConfig(config1)
+	assert.Equal(t, config2, config1)
+}
+
+func TestFirstPathConfig(t *testing.T) {
+	config1 := getFirstPathConfig()
+	assert.Equal(t, config1, PathConfig{})
+
+	config2 := getFirstPathConfig(config1)
+	assert.Equal(t, config2, config1)
+}
+
+func TestFirstStringConfig(t *testing.T) {
+	config1 := getFirstStringConfig()
+	assert.Equal(t, config1, StringConfig{})
+
+	config2 := getFirstStringConfig(config1)
+	assert.Equal(t, config2, config1)
+}

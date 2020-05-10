@@ -69,11 +69,7 @@ func (g *Gridder) DrawRectangle(row int, column int, rectangleConfigs ...Rectang
 		return err
 	}
 
-	center, err := g.getCellCenter(row, column)
-	if err != nil {
-		return err
-	}
-
+	center := g.getCellCenter(row, column)
 	rectangleConfig := getFirstRectangleConfig(rectangleConfigs...)
 	rectangleWidth := rectangleConfig.GetWidth()
 	rectangleHeight := rectangleConfig.GetHeight()
@@ -102,11 +98,7 @@ func (g *Gridder) DrawCircle(row int, column int, circleConfigs ...CircleConfig)
 		return err
 	}
 
-	center, err := g.getCellCenter(row, column)
-	if err != nil {
-		return err
-	}
-
+	center := g.getCellCenter(row, column)
 	circleConfig := getFirstCircleConfig(circleConfigs...)
 
 	g.ctx.Push()
@@ -134,16 +126,8 @@ func (g *Gridder) DrawPath(row1 int, column1 int, row2 int, column2 int, pathCon
 		return err
 	}
 
-	center1, err := g.getCellCenter(row1, column1)
-	if err != nil {
-		return err
-	}
-
-	center2, err := g.getCellCenter(row2, column2)
-	if err != nil {
-		return err
-	}
-
+	center1 := g.getCellCenter(row1, column1)
+	center2 := g.getCellCenter(row2, column2)
 	pathConfig := getFirstPathConfig(pathConfigs...)
 
 	g.ctx.Push()
@@ -168,11 +152,7 @@ func (g *Gridder) DrawLine(row int, column int, lineConfigs ...LineConfig) error
 		return err
 	}
 
-	center, err := g.getCellCenter(row, column)
-	if err != nil {
-		return err
-	}
-
+	center := g.getCellCenter(row, column)
 	lineConfig := getFirstLineConfig(lineConfigs...)
 	length := lineConfig.GetLength()
 
@@ -203,11 +183,7 @@ func (g *Gridder) DrawString(row int, column int, text string, fontFace font.Fac
 		return err
 	}
 
-	center, err := g.getCellCenter(row, column)
-	if err != nil {
-		return err
-	}
-
+	center := g.getCellCenter(row, column)
 	stringConfig := getFirstStringConfig(stringConfigs...)
 	g.ctx.Push()
 	g.ctx.SetFontFace(fontFace)
@@ -302,7 +278,7 @@ func (g *Gridder) getGridDimensions() (float64, float64) {
 	return gridWidth, gridHeight
 }
 
-func (g *Gridder) getCellCenter(row, column int) (*gg.Point, error) {
+func (g *Gridder) getCellCenter(row, column int) *gg.Point {
 	columns := float64(g.gridConfig.GetColumns())
 	rows := float64(g.gridConfig.GetRows())
 
@@ -311,7 +287,7 @@ func (g *Gridder) getCellCenter(row, column int) (*gg.Point, error) {
 
 	x := float64(column)*(gridWidth/columns) + cellWidth/2
 	y := float64(row)*(gridHeight/rows) + cellHeight/2
-	return &gg.Point{X: x, Y: y}, nil
+	return &gg.Point{X: x, Y: y}
 }
 
 func (g *Gridder) verifyInBounds(row, column int) error {
