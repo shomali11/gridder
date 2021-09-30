@@ -1,4 +1,4 @@
-module github.com/johnha/gridder
+module github.com/shomali11/gridder
 
 go 1.14
 
