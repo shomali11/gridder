@@ -1,6 +1,7 @@
 package gridder
 
 import (
+	"bytes"
 	"image/color"
 	"testing"
 
@@ -95,4 +96,14 @@ func TestSave(t *testing.T) {
 
 	err = gridder.SavePNG()
 	assert.NotNil(t, err)
+}
+
+func TestWriter(t *testing.T) {
+	gridder, err := New(ImageConfig{}, GridConfig{Rows: 2, Columns: 2, LineStrokeWidth: 2, BorderStrokeWidth: 10})
+	assert.Nil(t, err)
+
+	bImage := new(bytes.Buffer)
+
+	err = gridder.EncodePNG(bImage)
+	assert.Nil(t, err)
 }
