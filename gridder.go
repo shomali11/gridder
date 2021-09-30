@@ -3,6 +3,7 @@ package gridder
 import (
 	"errors"
 	"image/color"
+	"io"
 
 	"github.com/fogleman/gg"
 	"golang.org/x/image/font"
@@ -47,6 +48,13 @@ func (g *Gridder) SavePNG() error {
 	g.paintGrid()
 	g.paintBorder()
 	return g.ctx.SavePNG(g.imageConfig.GetName())
+}
+
+// EncodePNG encodes the image as a PNG and writes it to the provided io.Writer.
+func (g *Gridder) EncodePNG(w io.Writer) error {
+	g.paintGrid()
+	g.paintBorder()
+	return g.ctx.EncodePNG(w)
 }
 
 // PaintCell paints Cell
